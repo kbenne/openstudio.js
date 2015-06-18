@@ -25,15 +25,21 @@ npm install electron-prebuilt@v0.28.0 --save-dev
 
 ## Build OpenStudio node bindings
 
+* Install [swig 3.0.5](http://www.swig.org/download.html).
 * Clone OpenStudio
 ```
 cd ../
 git clone https://github.com/NREL/OpenStudio/tree/openstudiojs
 cd OpenStudio
 ```
-* Configure top level OpenStudio to build node bindings.  Enable BUILD_V8, BUILD_NODE, and BUILD_NODE_MODULES.
+* Configure top level OpenStudio to build node bindings.  Enable BUILD_NODE_MODULES. Set NODE_INCLUDE_DIR to $HOME/.electron-gyp/.node-gyp/0.28.0/ replacing $HOME with path to home, where .electron-gyp is located.
 * Build OpenStudio
-* Configure OpenStudioCore.  Set NODE_INCLUDE_DIR to $HOME/.electron-gyp/.node-gyp/0.28.0/ replacing $HOME with path to home, where .electron-gyp is located.
-* Build OpenStudioCore
+
+## Launch openstudio.js
+
+```
+cd ../openstudio.js
+NODE_PATH=../OpenStudio/build/OSCore-prefix/src/OSCore-build/Products/v8/ ./node_modules/.bin/electron .
+```
 
 
