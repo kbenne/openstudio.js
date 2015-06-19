@@ -39,11 +39,6 @@ If precompiled binaries are not available then do this.
 HOME=~/.electron-gyp ./node_modules/.bin/node-gyp install --target=0.28.0 --arch=ia64 --dist-url=https://atom.io/download/atom-shell
 ```
 
-* Install electron.
-```
-npm install electron-prebuilt@v0.28.0 --save-dev
-```
-
 * Install [swig 3.0.5](http://www.swig.org/download.html).
 
 * Clone OpenStudio
