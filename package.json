@@ -1,5 +1,9 @@
 {
-  "name"    : "OpenStudio",
-  "version" : "0.1.0",
-  "main"    : "main.js"
+  "name"         : "OpenStudio",
+  "version"      : "0.1.0",
+  "main"         : "main.js",
+  "dependencies" : { 
+    "node-gyp" : "latest",
+    "electron-prebuilt" : "0.28.0"
+  }
 }
