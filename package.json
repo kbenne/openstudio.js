@@ -4,6 +4,6 @@
   "main"         : "main.js",
   "dependencies" : { 
     "node-gyp" : "latest",
-    "electron-prebuilt" : "0.28.0"
+    "electron-prebuilt" : "latest"
   }
 }
