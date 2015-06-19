@@ -18,9 +18,9 @@ npm install
 ```
 
 * Extract OpenStudio node bindings to the project root.
-- [Mac - 64 bit](https://drive.google.com/file/d/0B6AYyX2ggNyBZ0ZZbC1fLXczUm8/view?usp=sharing)
-- Windows
-- Linux
+[Mac - 64 bit](https://drive.google.com/file/d/0B6AYyX2ggNyBZ0ZZbC1fLXczUm8/view?usp=sharing)
+Windows
+Linux
 
 * Launch the application.
 ```
@@ -28,6 +28,8 @@ npm install
 ```
 
 ## Building OpenStudio Node Bindings
+
+If precompiled binaries are not available then do this.
 
 * Install the dependencies required to make native node modules that are compatible with electron.  The general method is described [here](https://github.com/atom/electron/blob/master/docs/tutorial/using-native-node-modules.md#the-node-gyp-way).
 ```
