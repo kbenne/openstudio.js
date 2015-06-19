@@ -18,9 +18,12 @@ npm install
 ```
 
 * Extract OpenStudio node bindings to the project root.
-[Mac - 64 bit](https://drive.google.com/file/d/0B6AYyX2ggNyBZ0ZZbC1fLXczUm8/view?usp=sharing)
-Windows
-Linux
+
+   [Mac - 64 bit](https://drive.google.com/file/d/0B6AYyX2ggNyBZ0ZZbC1fLXczUm8/view?usp=sharing)
+
+   Windows
+
+   Linux
 
 * Launch the application.
 ```
