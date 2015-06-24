@@ -21,7 +21,7 @@ npm install
 
    [Mac - 64 bit](https://drive.google.com/file/d/0B6AYyX2ggNyBZ0ZZbC1fLXczUm8/view?usp=sharing)
 
-   Windows
+   [Windows - 64 bit](https://drive.google.com/file/d/0B6AYyX2ggNyBNk5JMndqT0pTd2s/view?usp=sharing)
 
    Linux
 
