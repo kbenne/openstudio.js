@@ -9,31 +9,47 @@
   var myAppModule = angular.module('myModule', []);
   
   var appController = function ($scope) {
-    $scope.os = openstudio;
-    $scope.model = new openstudio.model.Model();
-    $scope.tz = new openstudio.model.ThermalZone($scope.model);
-    $scope.name = $scope.tz.name().get();
+    var model = new openstudio.model.Model();
 
-    $scope.setThermalZoneName = function () {
-      $scope.tz.setName($scope.name);
+    $scope.zones = [];
+    for( i = 0; i < 3; i++ ) {
+      model_object = new openstudio.model.ThermalZone(model);
+      $scope.zones[i] = {};
+      $scope.zones[i].model_object = model_object;
+      $scope.zones[i].name = model_object.name().get();
+    }
+    $scope.setName = function (zone,name) {
+      zone.model_object.setName(name);
     };
-
+    $scope.addZone = function () {
+      model_object = new openstudio.model.ThermalZone(model);
+      zone = {};
+      zone.model_object = model_object;
+      zone.name = model_object.name().get();
+      
+      $scope.zones.push(zone);
+    };
   };
   myAppModule.controller('appController', appController);
 </script>
 </head>
 <body ng-app="myModule" >
   <div ng-controller="appController">
+    <div>
+     <a ng-click="addZone()">Add Zone</a>
+    </div>
+    <div>
     <table>
-      <tr>
+      <tr ng-repeat="zone in zones">
         <td>
-          <h1>Angular OpenStudio Test:</h1>
-          Change Thermal Zone Name: <input type="text" ng-model="name" ng-change="setThermalZoneName()" placeholder="Input the thermal zone name here" />
-
-          <div style="margin-top:20px;">Thermal Zone Name: {{tz.name().get()}}</div>
+          <input type="text" ng-model="zone.name" ng-change="setName(zone,zone.name)"/>
+        </td>
+        <td>
+          {{zone.model_object.name().get()}}
         </td>
       </tr>
     </table>
+    </div>
   </div>
 </body>
 </html>
