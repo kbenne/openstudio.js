@@ -3,8 +3,9 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>AngularJS Test</title>
-<script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular.js'></script>
-<script type='text/javascript'>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular.js"></script>
+<script type="text/javascript">
   var openstudio = require('../openstudio-node/OpenStudio.js').openstudio;
   var myAppModule = angular.module('myModule', []);
   
@@ -14,7 +15,7 @@
     function zone(_model) {
       this.model_object = new openstudio.model.ThermalZone(_model);
       Object.defineProperties(this, {
-        'name': {
+        name: {
           get: function() {
             return this.model_object.name().get();
           },
@@ -22,12 +23,12 @@
             this.model_object.setName(_name);
           }
         },
-        'multiplier': {
+        multiplier: {
           get: function() {
             return this.model_object.multiplier();
           },
           set: function(_value) {
-            this.model_object.setMultiplier(_value);
+            if (Number.isInteger(_value)) this.model_object.setMultiplier(_value);
           }
         }
       });
@@ -45,33 +46,34 @@
   };
   myAppModule.controller('appController', appController);
 </script>
+<style type="text/css">
+* {
+  outline: none;
+}
+</style>
 </head>
 <body ng-app="myModule" >
   <div ng-controller="appController">
+    <button type="button" ng-click="addZone()">Add Zone</button>
     <div>
-     <a ng-click="addZone()">Add Zone</a>
-    </div>
-    <div>
-    <table>
-      <th>Zone Name Input</th>
-      <th>Zone Name Output</th>
-      <th>Zone Multiplier</th>
-      <tr ng-repeat="zone in zones">
-        <td>
-          <input type="text" ng-model="zone.name" />
-        </td>
-        <td>
-          {{zone.name}}
-        </td>
-        <td>
-          <!-- Need some validation to make sure it is an int -->
-          <input type="number" ng-model="zone.multiplier" onClick="this.select();" />
-        </td>
-        <td>
-          <a ng-click="removeZone(zone)">Remove {{zone.name}}</a>
-        </td>
-      </tr>
-    </table>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Zone Name Input</th>
+            <th>Zone Name Output</th>
+            <th>Zone Multiplier</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="zone in zones">
+            <td><input type="text" ng-model="zone.name" /></td>
+            <td>{{zone.name}}</td>
+            <td><input type="number" pattern="\d*" ng-model="zone.multiplier" onClick="select();" /></td>
+            <td><button type="button" class="close" aria-label="Close" ng-click="removeZone(zone)"><span aria-hidden="true">&times;</span></button></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </body>
