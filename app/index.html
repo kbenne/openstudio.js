@@ -11,23 +11,36 @@
   var appController = function ($scope) {
     var model = new openstudio.model.Model();
 
-    $scope.zones = [];
-    for( i = 0; i < 3; i++ ) {
-      model_object = new openstudio.model.ThermalZone(model);
-      $scope.zones[i] = {};
-      $scope.zones[i].model_object = model_object;
-      $scope.zones[i].name = model_object.name().get();
-    }
-    $scope.setName = function (zone,name) {
-      zone.model_object.setName(name);
+    function zone(_model) {
+      this.model_object = new openstudio.model.ThermalZone(_model);
+      Object.defineProperties(this, {
+        'name': {
+          get: function() {
+            return this.model_object.name().get();
+          },
+          set: function(_name) {
+            this.model_object.setName(_name);
+          }
+        },
+        'multiplier': {
+          get: function() {
+            return this.model_object.multiplier();
+          },
+          set: function(_value) {
+            this.model_object.setMultiplier(_value);
+          }
+        }
+      });
     };
+
+    $scope.zones = [];
     $scope.addZone = function () {
-      model_object = new openstudio.model.ThermalZone(model);
-      zone = {};
-      zone.model_object = model_object;
-      zone.name = model_object.name().get();
-      
-      $scope.zones.push(zone);
+      _zone = new zone(model);
+      $scope.zones.push(_zone);
+    };
+    $scope.removeZone = function (_zone) {
+      $scope.zones.splice($scope.zones.indexOf(_zone),1);
+      _zone.model_object.remove();
     };
   };
   myAppModule.controller('appController', appController);
@@ -40,12 +53,22 @@
     </div>
     <div>
     <table>
+      <th>Zone Name Input</th>
+      <th>Zone Name Output</th>
+      <th>Zone Multiplier</th>
       <tr ng-repeat="zone in zones">
         <td>
-          <input type="text" ng-model="zone.name" ng-change="setName(zone,zone.name)"/>
+          <input type="text" ng-model="zone.name" />
         </td>
         <td>
-          {{zone.model_object.name().get()}}
+          {{zone.name}}
+        </td>
+        <td>
+          <!-- Need some validation to make sure it is an int -->
+          <input type="number" ng-model="zone.multiplier" onClick="this.select();" />
+        </td>
+        <td>
+          <a ng-click="removeZone(zone)">Remove {{zone.name}}</a>
         </td>
       </tr>
     </table>
