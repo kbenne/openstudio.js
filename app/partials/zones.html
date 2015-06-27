@@ -1,0 +1,26 @@
+<div ng-controller="appController">
+  <div>
+    <button type="button" ng-click="addZone()">Add Zone</button>
+  </div>
+  <div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Zone Name Input</th>
+          <th>Zone Name Output</th>
+          <th>Zone Multiplier</th>
+          <th>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="zone in zones">
+          <td><input type="text" ng-model="zone.name" /></td>
+          <td>{{zone.name}}</td>
+          <td><input type="number" pattern="\d*" ng-model="zone.multiplier" onClick="select();" /></td>
+          <td><button type="button" class="close" aria-label="Close" ng-click="removeZone(zone)"><span aria-hidden="true">&times;</span></button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

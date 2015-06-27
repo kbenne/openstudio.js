@@ -5,46 +5,10 @@
 <title>AngularJS Test</title>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular-route.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
 <script type="text/javascript">
-  var openstudio = require('../openstudio-node/OpenStudio.js').openstudio;
-  var myAppModule = angular.module('myModule', []);
-  
-  var appController = function ($scope) {
-    var model = new openstudio.model.Model();
-
-    function zone(_model) {
-      this.model_object = new openstudio.model.ThermalZone(_model);
-      Object.defineProperties(this, {
-        name: {
-          get: function() {
-            return this.model_object.name().get();
-          },
-          set: function(_name) {
-            this.model_object.setName(_name);
-          }
-        },
-        multiplier: {
-          get: function() {
-            return this.model_object.multiplier();
-          },
-          set: function(_value) {
-            if (Number.isInteger(_value)) this.model_object.setMultiplier(_value);
-          }
-        }
-      });
-    };
-
-    $scope.zones = [];
-    $scope.addZone = function () {
-      _zone = new zone(model);
-      $scope.zones.push(_zone);
-    };
-    $scope.removeZone = function (_zone) {
-      $scope.zones.splice($scope.zones.indexOf(_zone),1);
-      _zone.model_object.remove();
-    };
-  };
-  myAppModule.controller('appController', appController);
+  var model = new openstudio.model.Model();
 </script>
 <style type="text/css">
 * {
@@ -53,28 +17,13 @@
 </style>
 </head>
 <body ng-app="myModule" >
-  <div ng-controller="appController">
-    <button type="button" ng-click="addZone()">Add Zone</button>
+  <div>
     <div>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Zone Name Input</th>
-            <th>Zone Name Output</th>
-            <th>Zone Multiplier</th>
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="zone in zones">
-            <td><input type="text" ng-model="zone.name" /></td>
-            <td>{{zone.name}}</td>
-            <td><input type="number" pattern="\d*" ng-model="zone.multiplier" onClick="select();" /></td>
-            <td><button type="button" class="close" aria-label="Close" ng-click="removeZone(zone)"><span aria-hidden="true">&times;</span></button></td>
-          </tr>
-        </tbody>
-      </table>
+      <a href="#/zones">Zones</a>
+      <a href="#/systems">Systems</a>
     </div>
+  </div>
+  <div ng-view>
   </div>
 </body>
 </html>
