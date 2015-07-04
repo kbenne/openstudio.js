@@ -13,8 +13,8 @@
     <script src="bower_components/angular-spinner/angular-spinner.js"></script>
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/angular-ui-router.stateHelper/statehelper.js"></script>
-    <script src="bower_components/easeljs/lib/easeljs-0.8.1.combined.js"></script>
     <script src="bower_components/lodash/lodash.js"></script>
+    <script src="bower_components/raphael/raphael.js"></script>
     <!-- Production
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -24,21 +24,23 @@
     <script src="bower_components/angular-spinner/angular-spinner.min.js"></script>
     <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script src="bower_components/angular-ui-router.stateHelper/statehelper.min.js"></script>
-    <script src="bower_components/easeljs/lib/easeljs-0.8.1.min.js"></script>
     <script src="bower_components/lodash/lodash.min.js"></script>
+    <script src="bower_components/raphael/raphael-min.js"></script>
     -->
     <link href="css/style.css" rel="stylesheet">
     <script src="app.js"></script>
     <script src="services/os.js"></script>
     <script src="services/Shared.js"></script>
+    <script src="controllers/NavCtrl.js"></script>
     <script src="controllers/SystemsCtrl.js"></script>
     <script src="controllers/ZonesCtrl.js"></script>
   </head>
   <body ng-app="openstudioApp" class="container-fluid">
-    <tabset class="pad-top-20">
-      <tab heading="Zones" ui-sref="zones"></tab>
-      <tab heading="Systems" ui-sref="systems"></tab>
-    </tabset>
+    <div ng-controller="NavCtrl" class="pad-top-20">
+      <tabset>
+        <tab ng-repeat="tab in tabs" heading="{{tab.heading}}" active="tab.active" ui-sref="{{tab.route}}"></tab>
+      </tabset>
+    </div>
     <div ui-view></div>
   </body>
 </html>
