@@ -13,7 +13,7 @@
     "angular-ui-router": "latest",
     "angular-ui-router.stateHelper": "latest",
     "bootstrap": "latest",
-    "easeljs": "latest",
-    "lodash": "latest"
+    "lodash": "latest",
+    "raphael": "latest"
   }
 }

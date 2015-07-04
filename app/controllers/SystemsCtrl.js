@@ -1,46 +1,34 @@
 'use strict';
 
 openstudioApp.controller('SystemsCtrl', ['$scope', '$log', 'os', function ($scope, $log, os) {
+  $scope.standardUnit = 100;
+  $scope.width = 3000;
+  $scope.height = 300;
+  $scope.paper = Raphael('systems-canvas', $scope.width, $scope.height);
+  // Fix for subpixel aliasing
+  $scope.paper.setViewBox(0.5, 0.5, $scope.width, $scope.height);
 
-  var osshapes = {
-    standardUnit: 100.0,
-
-    getShape: function (modelObject) {
-      var result = {};
-      if (os.openstudio.model.toNode(modelObject).isNull()) {
-        result = new osshapes.StraightComponent();
-      } else {
-        result = new osshapes.Node();
-      }
-      return result;
-    },
-
-    StraightComponent: function () {
-      shape = new createjs.Shape();
-      shape.graphics.beginStroke("black").moveTo(0.0, 0.0).lineTo(osshapes.standardUnit, 0.0);
-      return shape;
-    },
-
-    Node: function () {
-      var shape = new createjs.Shape();
-      shape.graphics.beginStroke("black").moveTo(0.0, 0.0).lineTo(osshapes.standardUnit, 0.0);
-      shape.graphics.beginFill("black").drawCircle(osshapes.standardUnit / 2.0, 0, 7.0);
-      return shape;
-    }
+  $scope.addStraightComponent = function (x, y) {
+    var line = $scope.paper.path(['M', x, y, 'l', $scope.standardUnit, 0]);
+  };
+  $scope.addNode = function (x, y) {
+    var line = $scope.paper.path(['M', x, y, 'l', $scope.standardUnit, 0]);
+    var circle = $scope.paper.circle($scope.standardUnit / 2 + x, y, 7).attr('fill', 'black');
   };
 
   os.openstudio.model.addSystemType7(os.model);
   var plant = os.openstudio.model.getPlantLoops(os.model).get(0);
   var supplyComps = plant.supplyComponents();
 
-  var stage = new createjs.Stage("demoCanvas");
-
   for (var i = 0; i < supplyComps.size(); ++i) {
-    var shape = osshapes.getShape(supplyComps.get(i));
-    shape.x = i * (osshapes.standardUnit + 10.0);
-    shape.y = 50.0;
-    stage.addChild(shape);
-  }
+    var modelObject = supplyComps.get(i);
+    var x = i * ($scope.standardUnit + 10);
+    var y = 50;
 
-  stage.update();
+    if (os.openstudio.model.toNode(modelObject).isNull()) {
+      $scope.addStraightComponent(x, y);
+    } else {
+      $scope.addNode(x, y);
+    }
+  }
 }]);
