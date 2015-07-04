@@ -1,0 +1,19 @@
+{
+  "name": "openstudioApp",
+  "description": "A demo Electron project using OpenStudio bindings",
+  "version": "1.0.0",
+  "homepage": "https://github.com/kbenne/openstudio.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "latest",
+    "angular-animate": "latest",
+    "angular-bootstrap": "latest",
+    "angular-spinner": "latest",
+    "angular-ui-router": "latest",
+    "angular-ui-router.stateHelper": "latest",
+    "bootstrap": "latest",
+    "easeljs": "latest",
+    "lodash": "latest"
+  }
+}
