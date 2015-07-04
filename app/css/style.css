@@ -1,0 +1,15 @@
+* {
+  outline: none;
+}
+
+.pad-bot-20 {
+  padding-bottom: 20px;
+}
+
+.pad-tb-20 {
+  padding: 20px 0;
+}
+
+.pad-top-20 {
+  padding-top: 20px;
+}
