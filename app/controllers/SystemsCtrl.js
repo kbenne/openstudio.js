@@ -26,15 +26,24 @@ openstudioApp.controller('SystemsCtrl', ['$scope', '$log', 'os', function ($scop
       shape.graphics.beginStroke("black").moveTo(0.0,0.0).lineTo(osshapes.standardUnit,0.0);
       shape.graphics.beginFill("black").drawCircle(osshapes.standardUnit / 2.0,0,7.0);
       return shape;
+    },
+
+    drawSplitter: function(branchLengths) {
+      var shape = new createjs.Shape();
+      shape.graphics.beginStroke("black").moveTo(osshapes.standardUnit / 2.0,0.0).lineTo(osshapes.standardUnit / 2.0,osshapes.standardUnit * branchLengths);
+      for( var i = 0; i < branchLengths; ++i ) {
+        shape.graphics.beginStroke("black").moveTo(osshapes.standardUnit / 2.0,osshapes.standardUnit * i).lineTo(osshapes.standardUnit,osshapes.standardUnit * i);
+      };
+      return shape;
     }
   };
 
   var oscontainers = {
     drawBranch: function(modelObjects) {
       var branch = new createjs.Container();
-      for( oscontainers.i = 0; oscontainers.i < modelObjects.size(); ++oscontainers.i ) {
-        var shape = osshapes.drawShape(modelObjects.get(oscontainers.i));
-        shape.x = oscontainers.i * (osshapes.standardUnit + 10.0);
+      for( var i = 0; i < modelObjects.size(); ++i ) {
+        var shape = osshapes.drawShape(modelObjects.get(i));
+        shape.x = i * osshapes.standardUnit;
         shape.y = 0.0;
         branch.addChild(shape);
       };
@@ -42,7 +51,6 @@ openstudioApp.controller('SystemsCtrl', ['$scope', '$log', 'os', function ($scop
     }
   };
 
-  os.openstudio.model.addSystemType7(os.model);
   const plant = os.openstudio.model.getPlantLoops(os.model).get(0);
   const supplyComps = plant.supplyComponents();
 
@@ -63,16 +71,23 @@ openstudioApp.controller('SystemsCtrl', ['$scope', '$log', 'os', function ($scop
   var xpos = 0.0;
 
   if( splitter && mixer ) {
-    const outletObjects = splitter.outletModelObjects();
-    const inletObjects = mixer.inletModelObjects();
+    var outletObjects = splitter.outletModelObjects();
+    var inletObjects = mixer.inletModelObjects();
+
+    xpos = xpos + osshapes.standardUnit;
+
+    var splitter = osshapes.drawSplitter(outletObjects.size());
+    splitter.x = xpos;
+    splitter.y = 0.5 + (osshapes.standardUnit);
+    stage.addChild(splitter);
 
     xpos = xpos + osshapes.standardUnit;
 
     for( var i = 0; i < inletObjects.size(); ++i ) {
-      const branchComps = plant.supplyComponents(os.openstudio.model.toHVACComponent(outletObjects.get(i)).get(),os.openstudio.model.toHVACComponent(inletObjects.get(i)).get());
+      var branchComps = plant.supplyComponents(os.openstudio.model.toHVACComponent(outletObjects.get(i)).get(),os.openstudio.model.toHVACComponent(inletObjects.get(i)).get());
       var branch = oscontainers.drawBranch(branchComps);
       branch.x = xpos;
-      branch.y = (i + 1) * (osshapes.standardUnit + 10.0);
+      branch.y = 0.5 + (i + 1) * osshapes.standardUnit;
       stage.addChild(branch);
     };
   };
