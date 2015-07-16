@@ -67,6 +67,7 @@ openstudioApp.controller('SystemsCtrl', ['$scope', '$log', 'os', function ($scop
   };
 
   var stage = new createjs.Stage("demoCanvas");
+  stage.regX = 0.5;
 
   var xpos = 0.0;
 
