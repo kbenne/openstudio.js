@@ -17,7 +17,7 @@ cd openstudio.js
 npm install
 ```
 
-* Extract OpenStudio node bindings to the project root.
+* Extract OpenStudio node bindings to ```<project root>/services/```. You should end up with a directory ```<project root>/services/openstudio-node/``` that contains a bunch of shared libraries and .node native extensions.
 
    [Mac - 64 bit](https://drive.google.com/file/d/0B6AYyX2ggNyBZ0ZZbC1fLXczUm8/view?usp=sharing)
 
