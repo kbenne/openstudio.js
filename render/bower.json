@@ -9,7 +9,7 @@
     "angular": "latest",
     "angular-animate": "latest",
     "angular-bootstrap": "latest",
-    "angular-spinner": "latest",
+    "angular-spinner": "master",
     "angular-ui-router": "latest",
     "angular-ui-router.stateHelper": "latest",
     "bootstrap": "latest",

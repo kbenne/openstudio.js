@@ -2,24 +2,13 @@
 
 var openstudioApp = angular.module('openstudioApp', [
   'ngAnimate',
-  'ui.router', 'ui.router.stateHelper',
-  'ui.bootstrap',
-  'angularSpinner']);
+  'ui.router', 
+  'ui.router.stateHelper',
+  'ui.bootstrap']);
 
-openstudioApp.config(['$logProvider', '$urlRouterProvider', 'stateHelperProvider', 'usSpinnerConfigProvider', function ($logProvider, $urlRouterProvider, stateHelperProvider, usSpinnerConfigProvider) {
-  usSpinnerConfigProvider.setDefaults({
-    color: '#70be44',
-    lines: 13,
-    length: 0,
-    width: 22,
-    radius: 60,
-    speed: 2.2,
-    trail: 60,
-    shadow: false,
-    hwaccel: true
-  });
+openstudioApp.config(['$logProvider', '$urlRouterProvider', 'stateHelperProvider', function ($logProvider, $urlRouterProvider, stateHelperProvider) {
 
-  $urlRouterProvider.when('', '/zones').otherwise('/zones');
+  $urlRouterProvider.when('', '/systems').otherwise('/systems');
 
   stateHelperProvider
     .state({
@@ -39,15 +28,15 @@ openstudioApp.config(['$logProvider', '$urlRouterProvider', 'stateHelperProvider
 openstudioApp.run(['$rootScope', '$log', 'Shared', function ($rootScope, $log, Shared) {
   $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
     //$log.debug('Changing state', toState);
-    Shared.startSpinner();
+    //Shared.startSpinner();
   });
   $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
     //$log.debug('State change success');
-    Shared.stopSpinner();
+    //Shared.stopSpinner();
   });
   $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
     $log.error('Unhandled state change error:', error);
-    Shared.stopSpinner();
+    //Shared.stopSpinner();
   });
   $rootScope.$on('$stateNotFound', function (event, unfoundState, fromState, fromParams) {
     $log.error('State not found:', unfoundState.to);
