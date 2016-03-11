@@ -2,239 +2,136 @@
 
 openstudioApp.controller('SystemsCtrl', ['$scope', '$log', 'os', function ($scope, $log, os) {
 
-  var osshapes = {
-    standardUnit: 100.0,
-    margin: 15,
+//var cola = require('../node_modules/webcola');
+var d3 = require('../node_modules/d3');
 
-    drawShape: function(modelObject) {
-      var result = {};
-      if( os.openstudio.model.toNode(modelObject).isNull() ) {
-        result = osshapes.drawStraightComponent();
-      } else {
-        result = osshapes.drawNode();
-      };
-      return result;
-    },
-  
-    drawStraightComponent: function() {
-      var container = new createjs.Container();
-      var shape = new createjs.Shape();
-      container.setBounds(0.0,0.0,osshapes.standardUnit,osshapes.standardUnit);
-      container.addChild(shape);
-      var boundingRect = container.getBounds();
-      var midY = boundingRect.height / 2.0;
-      shape.graphics.beginStroke("black").moveTo(0.0,midY).lineTo(osshapes.standardUnit,midY);
+var color = d3.scale.category10();
 
-      var bitmap = new createjs.Bitmap("images/pipe.png");
-      bitmap.x = 0.0;
-      bitmap.y = 0.0;
-      bitmap.image.onload = function() { stage.update(); };
-      container.addChild(bitmap);
+var svg = d3.select("body").append("svg")
+    .attr("width", 700)
+    .attr("height", 700);
 
-      return container;
-    },
+var nodes = [];
+var links = [];
+var groups = [];
 
-    drawNode: function() {
-      var shape = new createjs.Shape();
-      shape.setBounds(0.0,0.0,osshapes.standardUnit,osshapes.standardUnit);
-      var boundingRect = shape.getBounds();
-      var midY = boundingRect.height / 2.0;
-      shape.graphics.beginStroke("black").moveTo(0.0,midY).lineTo(osshapes.standardUnit / 2.0 - 7.0,midY);
-      shape.graphics.beginStroke("black").drawCircle(osshapes.standardUnit / 2.0,midY,7.0);
-      shape.graphics.beginStroke("black").moveTo(osshapes.standardUnit / 2.0 + 7.0,midY).lineTo(osshapes.standardUnit,midY);
-      return shape;
-    },
+var node1 = {name: 'ashley', width: 100, height: 100};
+var node2 = {name: 'kyle', width: 100, height: 100};
 
-    drawSplitter: function(branchLengths) {
-      var shape = new createjs.Shape();
-      shape.setBounds(0.0,0.0,osshapes.standardUnit,osshapes.standardUnit * (branchLengths + 1));
-      var boundingRect = shape.getBounds();
-      var yStart = osshapes.standardUnit / 2.0;
-      var xStart = osshapes.standardUnit / 2.0;
-      shape.graphics.beginStroke("black").moveTo(xStart,yStart).lineTo(xStart,yStart + osshapes.standardUnit * branchLengths);
-      for( var i = 0; i <= branchLengths; ++i ) {
-        var branchY = osshapes.standardUnit / 2.0 + osshapes.standardUnit * i;
-        shape.graphics.beginStroke("black").moveTo(xStart,branchY).lineTo(osshapes.standardUnit,branchY);
-      };
-      var midpoint = yStart + branchLengths * osshapes.standardUnit / 2.0;
-      shape.graphics.beginStroke("black").moveTo(0.0,midpoint).lineTo(xStart,midpoint);
-      return shape;
-    },
+nodes.push(node1);
+nodes.push(node2);
 
-    drawMixer: function(branchLengths) {
-      var shape = new createjs.Shape();
-      shape.setBounds(0.0,0.0,osshapes.standardUnit,osshapes.standardUnit * (branchLengths + 1));
-      var boundingRect = shape.getBounds();
-      var yStart = osshapes.standardUnit / 2.0;
-      var xStart = osshapes.standardUnit / 2.0;
-      shape.graphics.beginStroke("black").moveTo(xStart,yStart).lineTo(xStart,yStart + osshapes.standardUnit * branchLengths);
-      for( var i = 0; i <= branchLengths; ++i ) {
-        shape.graphics.beginStroke("black").moveTo(0.0,yStart + osshapes.standardUnit * i).lineTo(xStart,yStart + osshapes.standardUnit * i);
-      };
-      var midpoint = yStart + branchLengths * osshapes.standardUnit / 2.0;
-      shape.graphics.beginStroke("black").moveTo(xStart,midpoint).lineTo(osshapes.standardUnit,midpoint);
-      return shape;
-    },
+links.push({source: 0, target: 1});
 
-    drawDropZone: function() {
-      var shape = new createjs.Shape();
-      shape.setBounds(0.0,0.0,osshapes.standardUnit * 2.0,osshapes.standardUnit);
-      var boundingRect = shape.getBounds();
-      shape.graphics.beginStroke("black").drawRoundRect(0.0,osshapes.margin,boundingRect.width,boundingRect.height - osshapes.margin * 2.0,5.0);
-      return shape;
-    },
+var layout = new cola.Layout()
+    .avoidOverlaps(true)
+    .size([700, 700])
+    .nodes(nodes)
+    .links(links)
+    .linkDistance(30)
+    .flowLayout('x',100)
+    .symmetricDiffLinkLengths(5)
+    .convergenceThreshold(1e-4);
 
-    drawBranch: function(modelObjects) {
-      var width = 0.0;
-      var height = 0.0;
-      var branch = new createjs.Container();
-      for( var i = 0; i < modelObjects.size(); ++i ) {
-        var shape = osshapes.drawShape(modelObjects.get(i));
-        shape.x = width;
-        shape.y = 0.0;
-        branch.addChild(shape);
-        var bounds = shape.getBounds();
-        width = width + bounds.width;
-        if( height < bounds.height ) {
-          height = bounds.height;
-        }
-      };
+layout.start(100, 100, 100, 100, false);
 
-      branch.setBounds(0.0,0.0,width,height);
-      return branch;
-    },
+nodes.forEach(function (d) {
+    d.routerNode = {
+        name: d.name,
+        bounds: d.bounds.inflate(-20)
+    };
+});
 
-    drawSplitterMixerSet: function(splitterModelObject,mixerModelObject) {
-      var splitterMixerSet = new createjs.Container();
+var gridRouterNodes = nodes.map(function (d, i) {
+    d.routerNode.id = i;
+    return d.routerNode;
+});
 
-      var outletObjects = splitterModelObject.outletModelObjects();
-      var inletObjects = mixerModelObject.inletModelObjects();
-      var xpos = 0.0;
-      var ypos = 0.0;
+var gridRouter = new cola.GridRouter(gridRouterNodes, {
+    getChildren: function (v) { return v.children; },
+    getBounds: function (v) { return v.bounds; }
+});
 
-      var splitter = osshapes.drawSplitter(outletObjects.size());
-      splitter.x = xpos;
-      splitter.y = ypos;
-      splitterMixerSet.addChild(splitter);
+var routes = gridRouter.routeEdges(links, 5, function (e) { return e.source.routerNode.id; }, function (e) { return e.target.routerNode.id; });
 
-      var branches = new Array;
-      var longestBranchLength = 0;
-      for( var i = 0; i < inletObjects.size(); ++i ) {
-        var branchComps = plant.supplyComponents(os.openstudio.model.toHVACComponent(outletObjects.get(i)).get(),os.openstudio.model.toHVACComponent(inletObjects.get(i)).get());
-        if( branchComps.size() > longestBranchLength ) { longestBranchLength = branchComps.size(); }
-        branches[i] = osshapes.drawBranch(branchComps);
-      };
+var node = svg.selectAll(".node")
+    .data(nodes)
+    .enter().append("rect")
+    .attr("class", "node")
+    .attr("rx", 4).attr("ry", 4);
 
-      xpos = xpos + osshapes.standardUnit;
+svg.selectAll(".node").transition()
+    .attr("x", function (d) { return d.routerNode.bounds.x; })
+    .attr("y", function (d) { return d.routerNode.bounds.y; })
+    .attr("width", function (d) { return d.routerNode.bounds.width(); })
+    .attr("height", function (d) { return d.routerNode.bounds.height(); });
 
-      for( var i = 0; i < inletObjects.size(); ++i ) {
-        var branch = branches[i];
-        branch.x = xpos;
-        branch.y = ypos + i * osshapes.standardUnit;
-        splitterMixerSet.addChild(branch);
-      };
+svg.selectAll(".label")
+  .data(nodes)
+  .enter().append("text")
+  .attr("class", "label")
+  .text(function (d) { return d.name.replace(/^u/, ''); });
 
-      var dropZone = osshapes.drawDropZone();
-      var halfDiff = (longestBranchLength * osshapes.standardUnit - dropZone.getBounds().width) / 2.0;
-      dropZone.x = xpos + halfDiff;
-      dropZone.y = ypos + inletObjects.size() * osshapes.standardUnit;
-      splitterMixerSet.addChild(dropZone);
+svg.selectAll(".label").transition().attr("x", function (d) { return d.routerNode.bounds.cx(); })
+    .attr("y", function (d) { return d.routerNode.bounds.cy(); });
 
-      var dropZoneInlet = new createjs.Shape();
-      dropZoneInlet.graphics.beginStroke("black").moveTo(0.0,0.0).lineTo(halfDiff,0.0);
-      dropZoneInlet.x = xpos;
-      dropZoneInlet.y = dropZone.y + dropZone.getBounds().height / 2.0;
-      splitterMixerSet.addChild(dropZoneInlet);
+svg.selectAll('path').remove();
 
-      var dropZoneOutlet = new createjs.Shape();
-      dropZoneOutlet.graphics.beginStroke("black").moveTo(0.0,0.0).lineTo(halfDiff,0.0);
-      dropZoneOutlet.x = dropZone.x + dropZone.getBounds().width;
-      dropZoneOutlet.y = dropZone.y + dropZone.getBounds().height / 2.0;
-      splitterMixerSet.addChild(dropZoneOutlet);
+routes.forEach(function (route) {
+    var cornerradius = 5;
+    var arrowwidth = 3;
+    var arrowheight = 7;
+    var p = cola.GridRouter.getRoutePath(route, cornerradius, arrowwidth, arrowheight);
+    var c = color(0);
+    var linewidth = 2;
+    if (arrowheight > 0) {
+        svg.append('path')
+            .attr('d', p.arrowpath + ' Z')
+            .attr('stroke', '#550000')
+            .attr('stroke-width', 2);
+        svg.append('path')
+            .attr('d', p.arrowpath)
+            .attr('stroke', 'none')
+            .attr('fill', c);
+    }
+    svg.append('path')
+        .attr('d', p.routepath)
+        .attr('fill', 'none')
+        .attr('stroke', '#550000')
+        .attr('stroke-width', linewidth + 2);
+    svg.append('path')
+        .attr('d', p.routepath)
+        .attr('fill', 'none')
+        .attr('stroke', c)
+        .attr('stroke-width', linewidth);
+});
 
-      xpos = xpos + (longestBranchLength * osshapes.standardUnit);
-
-      var mixer = osshapes.drawMixer(outletObjects.size());
-      mixer.x = xpos;
-      mixer.y = ypos;
-      splitterMixerSet.addChild(mixer);
-
-      splitterMixerSet.setBounds(0.0,0.0,osshapes.standardUnit * (longestBranchLength + 2),osshapes.standardUnit * inletObjects.size());
-
-      return splitterMixerSet;
-    },
-
-    drawSupplySide: function(loop) {
-      const supplyComps = loop.supplyComponents();
-
-      var splitterModelObject = false;
-      for( var i = 0; i != supplyComps.size(); ++i ) {
-        const option = os.openstudio.model.toSplitter(supplyComps.get(i));
-        if( ! option.isNull() ) splitterModelObject = option.get();
-      };
-
-      var mixerModelObject = false;
-      for( var i = 0; i != supplyComps.size(); ++i ) {
-        const option = os.openstudio.model.toMixer(supplyComps.get(i))
-        if( ! option.isNull() ) mixerModelObject = option.get();
-      };
-
-      var supplyInletBranch = false;
-      var supplyOutletBranch = false;
-      var splitterMixerSet = false;
-
-      if( splitterModelObject ) {
-        var supplyInletComponents = loop.supplyComponents(loop.supplyInletNode(),os.openstudio.model.toHVACComponent(splitterModelObject.inletModelObject().get()).get());
-        supplyInletBranch = osshapes.drawBranch(supplyInletComponents);
-      };
-
-      if( splitterModelObject && mixerModelObject ) {
-        splitterMixerSet = osshapes.drawSplitterMixerSet(splitterModelObject,mixerModelObject);
-      };
-
-      if( mixerModelObject ) {
-        var supplyOutletComponents = loop.supplyComponents(os.openstudio.model.toHVACComponent(mixerModelObject.outletModelObject().get()).get(),loop.supplyOutletNode());
-        supplyOutletBranch = osshapes.drawBranch(supplyOutletComponents); 
-      }
-
-      var xpos = osshapes.margin;
-      var ypos = 0.5 + osshapes.margin;
-
-      if( supplyInletBranch ) {
-        supplyInletBranch.x = xpos;
-        if( splitterMixerSet ) {
-          supplyInletBranch.y = ypos + splitterMixerSet.getBounds().height / 2.0;
-        } else {
-          supplyInletBranch.y = ypos;
-        };
-        stage.addChild(supplyInletBranch);
-        xpos = xpos + supplyInletBranch.getBounds().width;
-      };
-
-      if( splitterMixerSet ) {
-        splitterMixerSet.x = xpos;
-        splitterMixerSet.y = ypos;
-        stage.addChild(splitterMixerSet);
-        xpos = xpos + splitterMixerSet.getBounds().width;
-      };
-
-      if( supplyOutletBranch ) {
-        supplyOutletBranch.x = xpos;
-        if( splitterMixerSet ) {
-          supplyOutletBranch.y = ypos + splitterMixerSet.getBounds().height / 2.0;
-        } else {
-          supplyOutletBranch.y = ypos;
-        }
-        stage.addChild(supplyOutletBranch);
-      }
-    },
-
-  };
+//var d3 = require('../node_modules/d3');
+//
+//var plant = os.openstudio.model.getPlantLoops(os.model).get(0);
+//
+//
+//var width = 2000,
+//    height = 480;
+//
+//
+//var nodes = [];
+//var links = [];
+//
+//var supplyComps = plant.supplyComponents();
+//
+//for( var i = 0; i < supplyComps.size(); ++i ) {
+//  nodes.push({x: 100, y: 100});
+//}
+//
+//
+//for( var i = 0; i < supplyComps.size() - 1; ++i ) {
+//  links.push( {
+//    source: i,
+//    target: i + 1 
+//  } );
+//}
+//
 
 
-  var stage = new createjs.Stage("demoCanvas");
-  var plant = os.openstudio.model.getPlantLoops(os.model).get(0);
-  osshapes.drawSupplySide(plant);
-
-  stage.update();
 }]);
